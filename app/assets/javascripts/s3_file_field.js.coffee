@@ -11,9 +11,13 @@ jQuery.fn.S3FileField = (options) ->
   $this = this
 
   extractOption = (key) ->
-    extracted = options[key]
-    delete options[key]
-    extracted
+
+    if options[key]?
+      extracted = options[key]
+      delete options[key]
+      extracted
+    else
+      undefined
 
   getFormData = (data, form) ->
     formData = undefined
@@ -28,14 +32,13 @@ jQuery.fn.S3FileField = (options) ->
       return formData
     return []
 
-  url = extractOption('url')
-  add = extractOption('add')
-  done = extractOption('done')
-  fail = extractOption('fail')
-  formData = extractOption('formData')
+  if options?
+    add = extractOption('add')
+    done = extractOption('done')
+    formData = extractOption('formData')
 
-  delete options['paramName']
-  delete options['singleFileUploads']
+    delete options['paramName']
+    delete options['singleFileUploads']
 
   finalFormData = undefined
 
@@ -47,7 +50,7 @@ jQuery.fn.S3FileField = (options) ->
     singleFileUploads: true
 
     # We don't want to send it to default form url
-    url: url || $this.data('url')
+    url: $this.data('url')
 
     # For IE <= 9 force iframe transport
     forceIframeTransport: do ->
@@ -63,9 +66,6 @@ jQuery.fn.S3FileField = (options) ->
     done: (e, data) ->
       data.result = build_content_object $this, data.files[0], data.result
       done(e, data) if done?
-
-    fail: (e, data) ->
-      fail(e, data) if fail?
 
     formData: (form) ->
       finalFormData =
